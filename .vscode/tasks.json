@@ -1,0 +1,124 @@
+{
+          "version": "2.0.0",
+          "command": "cmd",
+          "type": "shell",
+          "echoCommand": true,
+          "args": [
+              "/C"
+          ],
+          "tasks": [
+                    {
+                          "label": "Tokenize for PET",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\petcat -l 401 -w2 -o ${fileDirname}\\${fileBasenameNoExtension}.prg -- ${fileDirname}\\${fileBasenameNoExtension}.bas"
+                          },
+                          "problemMatcher": []
+                    },
+                    {
+                          "label": "Tokenize for C64",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\petcat -l 801 -w2 -o ${fileDirname}\\${fileBasenameNoExtension}.prg -- ${fileDirname}\\${fileBasenameNoExtension}.bas"
+                          },
+                          "problemMatcher": []
+                    },
+                    {
+                          "label": "PET - BASIC launch",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "\"C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\xpet.exe\" ${fileDirname}\\${fileBasenameNoExtension}.prg"
+                          },
+                          "dependsOn": [
+                                    "Tokenize for PET"
+                          ],
+                          "problemMatcher": [],
+                          "group": {
+                                    "kind": "build",
+                                    "isDefault": true
+                          }
+                    },
+                    {
+                          "label": "C64 - BASIC launch",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "\"C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\x64sc.exe\" ${fileDirname}\\${fileBasenameNoExtension}.prg"
+                          },
+                          "dependsOn": [
+                                    "Tokenize for C64"
+                          ],
+                          "problemMatcher": [],
+                          "group": {
+                                    "kind": "build",
+                                    "isDefault": true
+                          }
+                    },
+                    {
+                          "label": "C64Debugger assembly launch",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "\"C:\\Users\\Mike\\Desktop\\C64Debug\\C64Debugger-v0.64.58.6\\C64Debugger.exe\" -prg bin\\${fileBasenameNoExtension}.prg -debuginfo bin\\${fileBasenameNoExtension}.dbg -layout 8"
+                          },
+                          "dependsOn": [
+                                    "Assemble"
+                          ],
+                          "problemMatcher": [],
+                          "group": {
+                                    "kind": "build",
+                                    "isDefault": true
+                          }
+                    },
+                    {
+                          "label": "C64Debugger BASIC launch",
+                          "type": "shell",
+                          "windows": {
+                                    "command": "\"C:\\Users\\Mike\\Desktop\\C64Debug\\C64Debugger-v0.64.58.6\\C64Debugger.exe\" -prg bin\\${fileBasenameNoExtension}.prg -d64 ${fileDirname}\\bin\\tc_test.d64 -debuginfo ${fileDirname}\\bin\\${fileBasenameNoExtension}.dbg -layout 8"
+                          },
+                          "dependsOn": [
+                                    "Tokenize for C64"
+                          ],
+                          "problemMatcher": [],
+                          "group": {
+                                    "kind": "build",
+                                    "isDefault": true
+                          }
+                    },
+                    {
+                        "label": "Assemble",
+                        "type": "shell",
+                        "windows": {
+                            "command": "java -cp C:\\C64\\tools\\kickassembler\\KickAss.jar kickass.KickAssembler src\\${fileBasenameNoExtension}.asm -o bin\\${fileBasenameNoExtension}.prg -debugdump -bytedump"
+                        }
+                    },
+                    {
+                      "label": "PET - assemble & launch",
+                      "type": "shell",
+                      "windows": {
+                          "command":  "\"C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\xpet.exe\" bin\\${fileBasenameNoExtension}.prg"
+                      },
+                      "dependsOn": [
+                          "Assemble"
+                      ],
+                      "problemMatcher": [],
+                      "group": {
+                          "kind": "build",
+                          "isDefault": true
+                      }
+                  },
+                  {
+                      "label": "C64 - assemble & launch",
+                      "type": "shell",
+                      "windows": {
+                          "command":  "\"C:\\C64\\tools\\GTK3VICE-3.7-win64\\bin\\x64sc.exe\" bin\\${fileBasenameNoExtension}.prg"
+                      },
+                      "dependsOn": [
+                          "Assemble"
+                      ],
+                      "problemMatcher": [],
+                      "group": {
+                          "kind": "build",
+                          "isDefault": true
+                      }
+                  }
+          ]
+      }

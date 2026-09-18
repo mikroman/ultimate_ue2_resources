@@ -1,0 +1,170 @@
+############################
+Commodore BASIC V2: set one color, then reset
+############################
+Stock BASIC has no built-in UCI statement, but it can access the UCI registers with POKE and PEEK. This complete example prints a banner in color 15, changes it to red, waits for a key, and then uses RESET_PALETTE to return it to light gray.
+
+10 c=57116:d=57117:t=57119
+20 if peek(d)<>201 then print "uci not available":end
+25 print chr$(147):poke 646,15:print "color 15: red - press a key"
+30 n=6:gosub 200
+50 get k$:if k$="" then 50
+60 n=0:gosub 200
+70 print "default palette restored":end
+100 data 4,83,15,255,0,0
+200 if (peek(c) and 48)<>0 then print "uci busy":end
+210 if n=0 then poke d,4:poke d,84:goto 230
+220 for i=1 to n:read b:poke d,b:next
+230 poke c,1
+240 s=peek(c) and 48:if s=16 then 240
+250 if s<>32 then print "uci protocol error":end
+260 a$=""
+270 if (peek(c) and 64)=0 then 290
+280 a$=a$+chr$(peek(t)):goto 270
+290 poke c,2:print a$:return
+
+############################
+6502 assembly: set one color, then reset
+############################
+
+This complete example prints a banner using color 15, changes that color from light gray to red, waits for a key, and restores the built-in palette. Assemble it at $C000 and start it with SYS 49152. Production code should also read and check the status bytes at $DF1F; successful commands return the ASCII string 00,OK.
+
+* = $C000
+
+UCI_CONTROL = $DF1C
+UCI_COMMAND = $DF1D
+
+PUSH_CMD = $01
+DATA_ACCEPT = $02
+STATE_MASK = $30
+STATE_BUSY = $10
+STATE_LAST = $20
+
+start:
+    lda #$93               ; clear screen
+    jsr $FFD2              ; KERNAL CHROUT
+    lda #$0f
+    sta $0286              ; current text color = color 15
+    ldx #$00
+show:
+    lda banner,x
+    beq change
+    jsr $FFD2
+    inx
+    bne show
+change:
+    jsr set_light_gray_red
+key:
+    jsr $FFE4              ; KERNAL GETIN
+    beq key
+    jsr reset_palette
+    rts
+
+banner:
+    .text "COLOR 15: RED - PRESS A KEY", 0
+
+set_light_gray_red:
+    lda #$04               ; Control target
+    sta UCI_COMMAND
+    lda #$53               ; SET_PALETTE_COLOR
+    sta UCI_COMMAND
+    lda #$0f               ; color 15
+    sta UCI_COMMAND
+    lda #$ff               ; red
+    sta UCI_COMMAND
+    lda #$00               ; green, blue
+    sta UCI_COMMAND
+    sta UCI_COMMAND
+    jsr send_and_accept
+    rts
+
+reset_palette:
+    lda #$04               ; Control target
+    sta UCI_COMMAND
+    lda #$54               ; RESET_PALETTE
+    sta UCI_COMMAND
+    jsr send_and_accept
+    rts
+
+send_and_accept:
+    lda #PUSH_CMD
+    sta UCI_CONTROL
+wait:
+    lda UCI_CONTROL
+    and #STATE_MASK
+    cmp #STATE_BUSY
+    beq wait
+    cmp #STATE_LAST
+    bne protocol_error
+    lda #DATA_ACCEPT
+    sta UCI_CONTROL
+    rts
+
+protocol_error:
+    ; Application-specific error handling goes here.
+    rts
+
+############################
+6502 assembly: read all 16 colors
+############################
+After STATE_LAST is reached, bit 7 of $DF1C indicates that another response byte is available at $DF1E.
+
+UCI_RESPONSE = $DF1E
+palette = $C000            ; 48-byte application buffer
+
+get_palette:
+    lda #$04
+    sta UCI_COMMAND
+    lda #$51               ; GET_PALETTE
+    sta UCI_COMMAND
+    lda #PUSH_CMD
+    sta UCI_CONTROL
+wait2:
+    lda UCI_CONTROL
+    and #STATE_MASK
+    cmp #STATE_BUSY
+    beq wait2
+    cmp #STATE_LAST
+    bne protocol_error
+    ldx #$00
+read:
+    lda UCI_CONTROL
+    bpl done               ; bit 7 clear: response queue empty
+    lda UCI_RESPONSE
+    sta palette,x
+    inx
+    bne read
+done:
+    cpx #48
+    bne protocol_error
+    lda #DATA_ACCEPT
+    sta UCI_CONTROL
+    rts
+
+############################
+Runtime and VPL file behavior?
+############################
+The four palette commands change runtime video output only. They do not write flash configuration and do not select, create or overwrite a VPL file. A later palette change from the configuration UI, applying a VPL file, or rebooting the Ultimate may replace the runtime palette.
+
+A C64 program can load and save VPL files through the existing Ultimate-DOS UCI target ($01 or $02):
+
+To load: DOS_CMD_OPEN_FILE ($02) with attribute $01, DOS_CMD_READ_DATA ($04), then DOS_CMD_CLOSE_FILE ($03). Parse 16 RGB lines and send them with SET_PALETTE.
+
+To save or overwrite: DOS_CMD_OPEN_FILE ($02) with attribute $0E, one or more DOS_CMD_WRITE_DATA ($05) commands, then DOS_CMD_CLOSE_FILE ($03).
+A VPL file contains 16 non-empty RGB lines in C64 color-number order. Components are hexadecimal. Blank lines and text after # are ignored. This is the built-in default palette in VPL form:
+
+00 00 00 # 0 black
+F7 F7 F7 # 1 white
+8D 2F 34 # 2 red
+6A D4 CD # 3 cyan
+98 35 A4 # 4 purple
+4C B4 42 # 5 green
+2C 29 B1 # 6 blue
+EF EF 5D # 7 yellow
+98 4E 20 # 8 orange
+5B 38 00 # 9 brown
+D1 67 6D # 10 light red
+4A 4A 4A # 11 dark gray
+7B 7B 7B # 12 gray
+9F EF 93 # 13 light green
+6D 6A EF # 14 light blue
+B2 B2 B2 # 15 light gray

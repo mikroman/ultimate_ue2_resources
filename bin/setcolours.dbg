@@ -1,0 +1,134 @@
+<C64debugger version="1.0">
+   <Sources values="INDEX,FILE">
+      0,KickAss.jar:/include/autoinclude.asm
+      1,C:\DEV\UE2\ultimate_ue2_resources\SRC\setcolours.asm
+   </Sources>
+
+   <Segment name="Default" dest="" values="START,END,FILE_IDX,LINE1,COL1,LINE2,COL2">
+      <Block name="Unnamed">
+         $c000,$c001,1,24,5,24,7
+         $c002,$c004,1,25,5,25,7
+         $c005,$c006,1,26,5,26,7
+         $c007,$c009,1,27,5,27,7
+         $c00a,$c00b,1,28,5,28,7
+         $c00c,$c00e,1,30,5,30,7
+         $c00f,$c010,1,31,5,31,7
+         $c011,$c013,1,32,5,32,7
+         $c014,$c014,1,33,5,33,7
+         $c015,$c016,1,34,5,34,7
+         $c017,$c019,1,36,5,36,7
+         $c01a,$c01c,1,38,5,38,7
+         $c01d,$c01e,1,39,5,39,7
+         $c01f,$c021,1,40,5,40,7
+         $c022,$c022,1,41,5,41,7
+         $c023,$c03d,1,44,5,44,9
+         $c03e,$c03e,1,45,5,45,9
+         $c03f,$c040,1,48,5,48,7
+         $c041,$c043,1,49,5,49,7
+         $c044,$c045,1,50,5,50,7
+         $c046,$c048,1,51,5,51,7
+         $c049,$c04a,1,52,5,52,7
+         $c04b,$c04d,1,53,5,53,7
+         $c04e,$c04f,1,54,5,54,7
+         $c050,$c052,1,55,5,55,7
+         $c053,$c054,1,56,5,56,7
+         $c055,$c057,1,57,5,57,7
+         $c058,$c05a,1,58,5,58,7
+         $c05b,$c05d,1,59,5,59,7
+         $c05e,$c05e,1,60,5,60,7
+         $c05f,$c060,1,63,5,63,7
+         $c061,$c063,1,64,5,64,7
+         $c064,$c065,1,65,5,65,7
+         $c066,$c068,1,66,5,66,7
+         $c069,$c06b,1,67,5,67,7
+         $c06c,$c06c,1,68,5,68,7
+         $c06d,$c06e,1,71,5,71,7
+         $c06f,$c071,1,72,5,72,7
+         $c072,$c074,1,74,5,74,7
+         $c075,$c076,1,75,5,75,7
+         $c077,$c078,1,76,5,76,7
+         $c079,$c07a,1,77,5,77,7
+         $c07b,$c07c,1,78,5,78,7
+         $c07d,$c07e,1,79,5,79,7
+         $c07f,$c080,1,80,5,80,7
+         $c081,$c083,1,81,5,81,7
+         $c084,$c084,1,82,5,82,7
+         $c085,$c085,1,86,5,86,7
+      </Block>
+      <Block name="SYS49292">
+         $c08c,$c08d,1,95,5,95,7
+         $c08e,$c090,1,96,5,96,7
+         $c091,$c092,1,97,5,97,7
+         $c093,$c095,1,98,5,98,7
+         $c096,$c097,1,99,5,99,7
+         $c098,$c09a,1,100,5,100,7
+         $c09b,$c09d,1,102,5,102,7
+         $c09e,$c09f,1,103,5,103,7
+         $c0a0,$c0a1,1,104,5,104,7
+         $c0a2,$c0a3,1,105,5,105,7
+         $c0a4,$c0a5,1,106,5,106,7
+         $c0a6,$c0a7,1,107,5,107,7
+         $c0a8,$c0a9,1,108,5,108,7
+         $c0aa,$c0ac,1,110,5,110,7
+         $c0ad,$c0ae,1,111,5,111,7
+         $c0af,$c0b1,1,112,5,112,7
+         $c0b2,$c0b4,1,113,5,113,7
+         $c0b5,$c0b5,1,114,5,114,7
+         $c0b6,$c0b7,1,115,5,115,7
+         $c0b8,$c0b9,1,117,5,117,7
+         $c0ba,$c0bb,1,118,5,118,7
+         $c0bc,$c0bd,1,119,5,119,7
+         $c0be,$c0c0,1,120,5,120,7
+         $c0c1,$c0c1,1,121,5,121,7
+         $c0c2,$c0c4,1,137,1,137,5
+         $c0c5,$c0c7,1,138,1,138,5
+         $c0c8,$c0ca,1,139,1,139,5
+         $c0cb,$c0cd,1,140,1,140,5
+         $c0ce,$c0d0,1,141,1,141,5
+         $c0d1,$c0d3,1,142,1,142,5
+         $c0d4,$c0d6,1,143,1,143,5
+         $c0d7,$c0d9,1,144,1,144,5
+         $c0da,$c0dc,1,145,1,145,5
+         $c0dd,$c0df,1,146,1,146,5
+         $c0e0,$c0e2,1,147,1,147,5
+         $c0e3,$c0e5,1,148,1,148,5
+         $c0e6,$c0e8,1,149,1,149,5
+         $c0e9,$c0eb,1,150,1,150,5
+         $c0ec,$c0ee,1,151,1,151,5
+         $c0ef,$c0f1,1,152,1,152,5
+      </Block>
+   </Segment>
+
+   <Labels values="SEGMENT,ADDRESS,NAME,START,END,FILE_IDX,LINE1,COL1,LINE2,COL2">
+      Default,$df1c,UCI_CONTROL,1,12,8,12,18
+      Default,$df1d,UCI_COMMAND,1,13,8,13,18
+      Default,$0001,PUSH_CMD,1,15,8,15,15
+      Default,$0002,DATA_ACCEPT,1,16,8,16,18
+      Default,$0030,STATE_MASK,1,17,8,17,17
+      Default,$0010,STATE_BUSY,1,18,8,18,17
+      Default,$0020,STATE_LAST,1,19,8,19,17
+      Default,$df1e,UCI_RESPONSE,1,21,8,21,19
+      Default,$c000,start,1,23,1,23,6
+      Default,$c00c,show,1,29,1,29,5
+      Default,$c017,change,1,35,1,35,7
+      Default,$c01a,key,1,37,1,37,4
+      Default,$c023,banner,1,43,1,43,7
+      Default,$c03f,set_light_gray_red,1,47,1,47,19
+      Default,$c05f,reset_palette,1,62,1,62,14
+      Default,$c06d,send_and_accept,1,70,1,70,16
+      Default,$c072,wait,1,73,1,73,5
+      Default,$c085,protocol_error,1,84,1,84,15
+      Default,$c08c,get_palette,1,94,1,94,12
+      Default,$c09b,wait2,1,101,1,101,6
+      Default,$c0aa,read,1,109,1,109,5
+      Default,$c0b8,done,1,116,1,116,5
+      Default,$c0c2,palette,1,135,1,135,8
+   </Labels>
+
+   <Breakpoints values="SEGMENT,ADDRESS,ARGUMENT">
+   </Breakpoints>
+
+   <Watchpoints values="SEGMENT,ADDRESS1,ADDRESS2,ARGUMENT">
+   </Watchpoints>
+
+</C64debugger>
