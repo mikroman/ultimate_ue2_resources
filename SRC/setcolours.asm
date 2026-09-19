@@ -16,6 +16,7 @@ the status bytes at $DF1F; successful commands return the ASCII string 00,OK. */
 .label STATE_LAST = $20
 
 .label UCI_RESPONSE = $DF1E
+.label UCI_STATUS   = $DF1F
 
 start:
     lda #$93               // clear screen
@@ -24,7 +25,7 @@ start:
     sta $0286              // current text color = color 15
     ldx #$00
 show:
-    lda banner,x
+    lda banner,x    // message to print - 0=eof
     beq change
     jsr $FFD2
     inx
@@ -36,10 +37,6 @@ key:
     beq key
     jsr reset_palette
     rts
-
-banner:
-    .text "COLOR 15: RED - PRESS A KEY"
-    .byte 0
 
 set_light_gray_red:
     lda #$04               // Control register
@@ -70,9 +67,9 @@ send_and_accept:
 wait:
     lda UCI_CONTROL
     and #STATE_MASK
-    cmp #STATE_BUSY
+    cmp #STATE_BUSY     // are we still BUSY?
     beq wait
-    cmp #STATE_LAST
+    cmp #STATE_LAST     // last of DATA?
     bne protocol_error
     lda #DATA_ACCEPT
     sta UCI_CONTROL
@@ -106,7 +103,7 @@ read:
     inx
     bne read
 done:
-    cpx #48
+    cpx #$30
     bne protocol_error
     lda #DATA_ACCEPT
     sta UCI_CONTROL
@@ -116,6 +113,10 @@ protocol_error: // Application-specific error handling goes here.
     lda #$00
     sta $d020   // black border
     rts
+
+banner:
+    .text "COLOR 15: RED - PRESS A KEY"
+    .byte 0
 
 palette:
 
@@ -153,4 +154,52 @@ To save or overwrite:
     DOS_CMD_CLOSE_FILE ($03).
 A VPL file contains 16 non-empty RGB lines in C64 color-number order. Components are hexadecimal.
 Blank lines and text after # are ignored. This is the built-in default palette in VPL form
+
+Command format summary
+
+CTRL_CMD_SET_PALETTE_COLOR (0x53)
+Command format: $04 $53 [INDEX] [R] [G] [B]
+Description: Replaces one runtime color without rewriting the other 15 colors. INDEX is the C64 color
+number and must be in the range 0 through 15. The command must be exactly six bytes long.
+Status: 00,OK, or 81,INVALID PARAMS for an invalid index or command length.
+Invalid commands do not change the palette.
+
+CTRL_CMD_GET_PALETTE (0x51)
+Command format: $04 $51
+Description: Returns the currently applied runtime palette. The response is 48 bytes: 16 consecutive
+RGB triples in C64 color-number order (0 through 15). Each component is an unsigned 8-bit value.
+For example, response bytes 45, 46 and 47 are the red, green and blue components of color 15.
+Status: 00,OK. A payload or any command length other than two bytes returns 81,INVALID PARAMS.
+
+CTRL_CMD_RESET_PALETTE (0x54)
+Command format: $04 $54
+Description: Restores the runtime palette to the firmware’s built-in C64 default colors.
+No RGB payload is required.
+Status: 00,OK. A payload or any command length other than two bytes returns
+81,INVALID PARAMS without changing the palette.
+
+####################
+
+.label UCI_RESPONSE = $DF1E
+.label UCI_STATUS   = $DF1F
+
+The user software can now read both data and status from the respective registers $DF1E and $DF1F.
+Whether there is data or status available can be seen from the upper two bits of the status register.
+These bits will be ‘1’ when there is still more data to be read, and ‘0’ otherwise.
+####################
+When the protocol is in idle state (see paragraph 2.4.2 for the state encoding), the Ultimate-II is ready
+to receive a new command. This is done by writing the command byte by byte into the command data
+register at $DF1D. Then, the command is pushed into the Ultimate-II by writing a ‘1’ to the control bit
+‘PUSH_CMD’, in the control register. This will cause a state transition to “Command Busy”.
+####################
+As soon as the software has read all the data (or decides not to do so), the C64 should write a ‘1’ to the
+register bit ‘DATA_ACC’, to indicate that all data was accepted. If this was the last data block, this
+causes the state machine to go back to the idle state, or else, the state returns to “Command Busy”.
+####################
+The status register contains the following bits:
+Bit 7   Bit 6   Bit 5 Bit 4 Bit 3 Bit 2   Bit 1    Bit 0
+DATA_AV STAT_AV   STATE     ERROR ABORT_P DATA_ACC CMD_BUSY
+The control register contains the following bits:
+Bit 7 Bit 6 Bit 5 Bit 4 Bit 3   Bit 2 Bit 1    Bit 0
+      reserved          CLR_ERR ABORT DATA_ACC PUSH_CMD
 */
